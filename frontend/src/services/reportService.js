@@ -13,3 +13,7 @@ export const getReportById=async(id)=>{
   const response=await api.get(`/reports/${id}`);
   return response.data;
 }
+export const getMyReports = async () => {
+  const response = await api.get("/reports/my");
+  return response.data;
+};

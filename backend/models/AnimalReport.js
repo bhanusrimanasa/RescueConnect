@@ -5,35 +5,43 @@ const animalReportSchema = new mongoose.Schema(
     animalType: {
       type: String,
       required: true,
-      enum: ["Dog", "Cat", "Cow", "Bird", "Other"],
     },
+
     problem: {
       type: String,
       required: true,
     },
+
     condition: {
       type: String,
       required: true,
-      enum: ["Mild", "Moderate", "Critical"],
     },
+
     location: {
       type: String,
       required: true,
     },
+
     description: {
       type: String,
+      required: true,
     },
+
     contactUser: {
       type: String,
       required: true,
     },
+
     status: {
       type: String,
       enum: ["Pending", "Accepted", "Rescued"],
       default: "Pending",
     },
-    image: {
-      type: String,
+
+    reportedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
   },
   {

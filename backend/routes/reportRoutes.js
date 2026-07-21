@@ -1,9 +1,11 @@
 import express from "express";
-import { createReport,getAllReports,getReportById,updateReport,deleteReport } from "../controllers/reportController.js";
+import { createReport,getAllReports,getReportById,updateReport,deleteReport,getMyReports } from "../controllers/reportController.js";
+import { protect } from "../middleware/authMiddleware.js";
 const router=express.Router();
-router.post("/",createReport);
+router.post("/",protect,createReport);
 router.get("/",getAllReports);
+router.get("/my", protect, getMyReports);
 router.get("/:id",getReportById);
-router.put("/:id",updateReport);
-router.delete("/:id",deleteReport);
+router.put("/:id",protect,updateReport);
+router.delete("/:id",protect,deleteReport);
 export default router;
