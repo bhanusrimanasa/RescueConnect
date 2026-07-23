@@ -14,6 +14,9 @@ import Volunteer from "./pages/Volunteer";
 import Adoptions from "./pages/Adoptions";
 import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdoptionDetails from "./pages/AdoptionDetails";
+import AdoptionRequest from "./pages/AdoptionRequest";
+import AdoptionApplication from "./pages/AdoptionApplication";
 function App() {
   return (
     <>
@@ -35,7 +38,16 @@ function App() {
           <Route path="/reports/:id" element={<ReportDetails />} />
 
           <Route path="/adoptions" element={<Adoptions />} />
-                    <Route
+          <Route path="/adoptions/:id"  element={<AdoptionDetails />} /> 
+          <Route
+                path="/adoptions/:id/apply"
+                element={
+                  <ProtectedRoute>
+                    <AdoptionApplication />
+                  </ProtectedRoute>
+                }
+              />        
+            <Route
             path="/volunteer"
             element={
                 <ProtectedRoute>
@@ -51,18 +63,22 @@ function App() {
                 </ProtectedRoute>
             }
             />
-                    <Route
-            path="/profile"
-            element={
-                <ProtectedRoute>
-                <Profile />
+           <Route path="/profile" element={<ProtectedRoute><Profile />
                 </ProtectedRoute>
             }
             />
 
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
-        </Routes>
+          <Route
+            path="/adoption-request"
+            element={
+              <ProtectedRoute>
+                <AdoptionRequest />
+              </ProtectedRoute>
+            }
+          />
+          </Routes>
       </main>
 
       <Footer />

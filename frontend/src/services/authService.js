@@ -17,3 +17,11 @@ export const logoutUser = async () => {
   const response = await api.post("/auth/logout");
   return response.data;
 };
+export const updateProfile = async (userData) => {
+  const response = await api.put("/auth/profile", userData);
+  return response.data;
+};
+export const becomeVolunteer = async () => {
+  const response = await api.put("/auth/volunteer");
+  return response.data;
+};

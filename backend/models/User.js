@@ -16,7 +16,7 @@ const userSchema=mongoose.Schema({
     },
     role:{
         type:String,
-        enum:["user","ddmin","volunteer"],
+        enum:["user","admin","volunteer"],
         default:"user",
     },},
      {

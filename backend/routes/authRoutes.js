@@ -1,9 +1,11 @@
 import express from "express";
-import { registerUser,loginUser,getMe,logoutUser } from "../controllers/authController.js";
+import { registerUser,loginUser,getMe,updateProfile,logoutUser,becomeVolunteer } from "../controllers/authController.js";
 import { protect } from "../middleware/authMiddleware.js";
 const router=express.Router();
+router.put("/profile", protect, updateProfile);
 router.post("/register",registerUser);
 router.post("/login",loginUser);
 router.get("/me", protect, getMe);
 router.post("/logout", logoutUser);
+router.put("/volunteer", protect, becomeVolunteer);
 export default router;

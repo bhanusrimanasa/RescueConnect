@@ -109,3 +109,67 @@ export const logoutUser = (req, res) => {
     message: "Logged out successfully",
   });
 };
+export const updateProfile = async (req, res) => {
+  try {
+    const { name } = req.body;
+
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    user.name = name || user.name;
+
+    const updatedUser = await user.save();
+
+    res.status(200).json({
+      id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      role: updatedUser.role,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
+  }
+};
+export const becomeVolunteer = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    if (user.role === "volunteer") {
+      return res.status(400).json({
+        message: "You are already a volunteer",
+      });
+    }
+
+    user.role = "volunteer";
+
+    await user.save();
+
+    res.status(200).json({
+      message: "Congratulations! You are now a volunteer.",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
+  }
+};
