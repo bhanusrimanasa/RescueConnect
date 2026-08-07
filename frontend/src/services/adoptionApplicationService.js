@@ -32,3 +32,24 @@ export const getMyApplications = async () => {
   const response = await api.get("/adoption-applications/my");
   return response.data;
 };
+export const volunteerApproveApplication = async (id) => {
+  const res = await api.put(
+    `/adoption-applications/${id}/volunteer-approve`
+  );
+
+  return res.data;
+};
+export const getVolunteerApprovedApplications = async () => {
+  const res = await api.get(
+    "/adoption-applications/volunteer-approved"
+  );
+
+  return res.data;
+};
+export const volunteerRejectApplication = async (id) => {
+  const res = await api.put(
+    `/adoption-applications/${id}/volunteer-reject`
+  );
+
+  return res.data;
+};

@@ -44,11 +44,17 @@ const adoptionApplicationSchema = new mongoose.Schema(
       required: true,
     },
 
-    status: {
-      type: String,
-      enum: ["Pending", "Approved", "Rejected"],
-      default: "Pending",
-    },
+   status: {
+  type: String,
+  enum: [
+    "Pending",
+    "Volunteer Approved",
+    "Volunteer Rejected",
+    "Approved",
+    "Rejected",
+  ],
+  default: "Pending",
+},
   },
   {
     timestamps: true,

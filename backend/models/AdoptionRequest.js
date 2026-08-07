@@ -87,7 +87,13 @@ const adoptionRequestSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["Pending", "Approved", "Rejected"],
+      enum: [
+    "Pending",
+    "Volunteer Approved",
+    "Volunteer Rejected",
+    "Admin Approved",
+    "Admin Rejected",
+  ],
       default: "Pending",
     },
   },

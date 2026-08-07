@@ -1,22 +1,19 @@
 import { useEffect, useState } from "react";
 import {
-  getPendingRequests,
-  volunteerApproveRequest,
-  volunteerRejectRequest,
+  getVolunteerApprovedRequests,
+  adminApproveRequest,
+  adminRejectRequest,
 } from "../../services/adoptionRequestService";
 
-function PendingAdoptionRequests() {
+function PendingListingApprovals() {
   const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   const fetchRequests = async () => {
     try {
-      const data = await getPendingRequests();
+      const data = await getVolunteerApprovedRequests();
       setRequests(data);
     } catch (err) {
       console.log(err);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -24,81 +21,76 @@ function PendingAdoptionRequests() {
     fetchRequests();
   }, []);
 
-  const handleRecommendApprove = async (id) => {
+  const handleApprove = async (id) => {
     try {
-      await volunteerApproveRequest(id);
+      await adminApproveRequest(id);
 
       setRequests((prev) =>
-        prev.filter((request) => request._id !== id)
+        prev.filter((r) => r._id !== id)
       );
 
-      alert("Recommendation sent to Admin.");
+      alert("Listing Approved");
     } catch (err) {
       console.log(err);
-      alert("Failed to send recommendation.");
     }
   };
 
-  const handleRecommendReject = async (id) => {
+  const handleReject = async (id) => {
     try {
-      await volunteerRejectRequest(id);
+      await adminRejectRequest(id);
 
       setRequests((prev) =>
-        prev.filter((request) => request._id !== id)
+        prev.filter((r) => r._id !== id)
       );
 
-      alert("Recommendation recorded.");
+      alert("Listing Rejected");
     } catch (err) {
       console.log(err);
-      alert("Failed to reject.");
     }
   };
-
-  if (loading) {
-    return (
-      <div className="text-center py-10">
-        Loading Adoption Requests...
-      </div>
-    );
-  }
 
   return (
-    <div>
+    <div className="mt-16">
 
-      <h2 className="text-3xl font-bold mb-6">
-        Adoption Listings Awaiting Review
+      <h2 className="text-3xl font-bold mb-8">
+        Adoption Listings Awaiting Final Approval
       </h2>
 
       {requests.length === 0 ? (
         <div className="bg-white rounded-xl shadow p-8 text-center text-gray-500">
-          No adoption requests awaiting review.
+          No listings awaiting approval.
         </div>
       ) : (
         <div className="space-y-6">
 
           {requests.map((request) => (
+
             <div
               key={request._id}
               className="bg-white rounded-2xl shadow-md p-6"
             >
+
               <div className="flex justify-between">
 
-                <div className="space-y-2">
+                <div>
 
-                  <h3 className="text-2xl font-bold">
+                  <h2 className="text-2xl font-bold">
                     {request.name}
-                  </h3>
+                  </h2>
 
                   <p>
-                    <strong>Animal:</strong> {request.animalType}
+                    <strong>Animal:</strong>{" "}
+                    {request.animalType}
                   </p>
 
                   <p>
-                    <strong>Breed:</strong> {request.breed}
+                    <strong>Breed:</strong>{" "}
+                    {request.breed}
                   </p>
 
                   <p>
-                    <strong>Location:</strong> {request.location}
+                    <strong>Location:</strong>{" "}
+                    {request.location}
                   </p>
 
                   <p>
@@ -106,14 +98,12 @@ function PendingAdoptionRequests() {
                     {request.submittedBy?.name}
                   </p>
 
-                  <p className="text-gray-600">
-                    {request.animalDescription}
-                  </p>
-
                   <div className="mt-4">
-                    <span className="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-sm">
-                      Pending Volunteer Review
+
+                    <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
+                      Volunteer Approved
                     </span>
+
                   </div>
 
                 </div>
@@ -122,26 +112,28 @@ function PendingAdoptionRequests() {
 
                   <button
                     onClick={() =>
-                      handleRecommendApprove(request._id)
+                      handleApprove(request._id)
                     }
                     className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg"
                   >
-                    Recommend Approval
+                    Approve Listing
                   </button>
 
                   <button
                     onClick={() =>
-                      handleRecommendReject(request._id)
+                      handleReject(request._id)
                     }
                     className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg"
                   >
-                    Recommend Rejection
+                    Reject Listing
                   </button>
 
                 </div>
 
               </div>
+
             </div>
+
           ))}
 
         </div>
@@ -151,4 +143,4 @@ function PendingAdoptionRequests() {
   );
 }
 
-export default PendingAdoptionRequests;
+export default PendingListingApprovals;

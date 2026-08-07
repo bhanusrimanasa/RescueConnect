@@ -27,3 +27,16 @@ export const deleteAdoption = async (id) => {
   const response = await api.delete(`/adoptions/${id}`);
   return response.data;
 };
+export const getPendingAdoptions = async () => {
+  const res = await api.get("/adoptions/pending");
+  return res.data;
+};
+
+export const approveAdoptionListing = async (id, approvalStatus) => {
+  const res = await api.put(
+    `/adoptions/${id}/approval`,
+    { approvalStatus }
+  );
+
+  return res.data;
+};

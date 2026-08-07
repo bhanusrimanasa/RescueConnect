@@ -17,3 +17,33 @@ export const getMyReports = async () => {
   const response = await api.get("/reports/my");
   return response.data;
 };
+export const assignVolunteer = async (
+  reportId,
+  volunteerId
+) => {
+  const response = await api.put(
+    `/reports/${reportId}/assign`,
+    {
+      volunteerId,
+    }
+  );
+
+  return response.data;
+};
+export const acceptReport = async (id) => {
+  const response = await api.put(`/reports/${id}/accept`);
+  return response.data;
+};
+
+export const markRescued = async (id) => {
+  const response = await api.put(`/reports/${id}/rescue`);
+  return response.data;
+};
+export const updateProgress = async (id, data) => {
+  const response = await api.put(
+    `/reports/${id}/progress`,
+    data
+  );
+
+  return response.data;
+};

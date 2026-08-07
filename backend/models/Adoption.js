@@ -85,6 +85,11 @@ const adoptionSchema = new mongoose.Schema(
       ],
       default: "Available",
     },
+    approvalStatus: {
+  type: String,
+  enum: ["Pending", "Approved", "Rejected"],
+  default: "Pending",
+},
 
     rescuedBy: {
       type: mongoose.Schema.Types.ObjectId,

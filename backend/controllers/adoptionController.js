@@ -19,7 +19,7 @@ export const getAllAdoptions = async (req, res) => {
   try {
     const { search, location, status, animalType } = req.query;
 
-    const filter = {};
+    const filter = { approvalStatus: "Approved",};
     filter.status="Available";
     if (search) {
       filter.name = {
@@ -111,6 +111,48 @@ export const getAdoptionById = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: error.message,
+    });
+  }
+};
+export const getPendingAdoptions = async (req, res) => {
+  try {
+    const adoptions = await Adoption.find({
+      approvalStatus: "Pending",
+    })
+      .populate("rescuedBy", "name email")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json(adoptions);
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
+  }
+};
+export const updateApprovalStatus = async (req, res) => {
+  try {
+    const { approvalStatus } = req.body;
+
+    const adoption = await Adoption.findById(req.params.id);
+
+    if (!adoption) {
+      return res.status(404).json({
+        message: "Animal not found",
+      });
+    }
+
+    adoption.approvalStatus = approvalStatus;
+
+    await adoption.save();
+
+    res.status(200).json({
+      message: `Listing ${approvalStatus.toLowerCase()} successfully`,
+      adoption,
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
     });
   }
 };

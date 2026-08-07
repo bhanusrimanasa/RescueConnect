@@ -32,21 +32,67 @@ const animalReportSchema = new mongoose.Schema(
       required: true,
     },
 
-    status: {
-      type: String,
-      enum: ["Pending", "Accepted", "Rescued"],
-      default: "Pending",
-    },
+      status: {
+    type: String,
+    enum: [
+      "Pending",
+      "Assigned",
+      "In Progress",
+      "Rescued",
+      "Closed",
+    ],
+    default: "Pending",
+  },
 
     reportedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      },
+      assignedVolunteer: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
     },
+
+      assignedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: null,
+      },
+
+  assignedAt: {
+    type: Date,
+  },
+
+  priority: {
+    type: String,
+    enum: ["Critical", "High", "Moderate", "Low"],
+    default: "Moderate",
+  },
+  statusHistory: [
+  {
+    status: {
+      type: String,
+    },
+
+    updatedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+
+    timestamp: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+],
+
   },
   {
     timestamps: true,
   }
+  
 );
 
 const AnimalReport = mongoose.model("AnimalReport", animalReportSchema);

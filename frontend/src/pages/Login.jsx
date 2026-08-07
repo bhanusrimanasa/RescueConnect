@@ -24,7 +24,6 @@ function Login() {
     try {
       await loginUser(formData);
           await fetchUser();
-      alert("Login successful!");
 
       navigate("/");
     } catch (err) {

@@ -6,6 +6,8 @@ import {
   getAdoptionById,
   updateAdoption,
   deleteAdoption,
+  getPendingAdoptions,
+  updateApprovalStatus,
 } from "../controllers/adoptionController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
@@ -15,6 +17,19 @@ const router = express.Router();
 
 router.get("/", getAllAdoptions);
 
+router.get(
+  "/pending",
+  protect,
+  authorize("admin"),
+  getPendingAdoptions
+);
+
+router.put(
+  "/:id/approval",
+  protect,
+  authorize("admin"),
+  updateApprovalStatus
+);
 router.get("/:id", getAdoptionById);
 
 router.post(
@@ -37,5 +52,6 @@ router.delete(
   authorize("volunteer"),
   deleteAdoption
 );
+
 
 export default router;

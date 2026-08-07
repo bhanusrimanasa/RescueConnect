@@ -3,8 +3,8 @@ import express from "express";
 import {
   createApplication,
   getApplications,
-  approveApplication,
-  rejectApplication,getMyApplications
+  approveApplication,getVolunteerApprovedApplications,
+  rejectApplication,getMyApplications,volunteerApprove,volunteerReject,
 } from "../controllers/adoptionApplicationController.js";
 
 import {protect} from "../middleware/authMiddleware.js";
@@ -30,19 +30,37 @@ router.get(
   authorize("volunteer", "admin"),
   getApplications
 );
+router.put(
+  "/:id/volunteer-approve",
+  protect,
+  authorize("volunteer"),
+  volunteerApprove
+);
 
+router.put(
+  "/:id/volunteer-reject",
+  protect,
+  authorize("volunteer"),
+  volunteerReject
+);
 router.put(
   "/:id/approve",
   protect,
-  authorize("volunteer", "admin"),
+  authorize("admin"),
   approveApplication
 );
 
 router.put(
   "/:id/reject",
   protect,
-  authorize("volunteer", "admin"),
+  authorize("admin"),
   rejectApplication
+);
+router.get(
+  "/volunteer-approved",
+  protect,
+  authorize("admin"),
+  getVolunteerApprovedApplications
 );
 
 export default router;

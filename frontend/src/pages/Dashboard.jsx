@@ -4,7 +4,7 @@ import { getMyReports } from "../services/reportService";
 import { getMyApplications } from "../services/adoptionApplicationService";
 import UserDashboard from "../components/dashboard/UserDashboard";
 import VolunteerDashboard from "../components/dashboard/VolunteerDashboard";
-
+import AdminDashboard from "../components/dashboard/AdminDashboard";
 function Dashboard() {
   const { user } = useAuth();
 
@@ -32,19 +32,21 @@ const fetchApplications = async () => {
     console.log(err);
   }
 };
-  return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      {user?.role === "volunteer" ? (
-        <VolunteerDashboard user={user} />
-      ) : (
-        <UserDashboard
-          user={user}
-          myReports={myReports}
-          myApplications={myApplications}
-        />
-      )}
-    </div>
-  );
+  if (user?.role === "admin") {
+    return <AdminDashboard />;
+}
+
+if (user?.role === "volunteer") {
+    return <VolunteerDashboard user={user} />;
+}
+
+return (
+    <UserDashboard
+        user={user}
+        myReports={myReports}
+        myApplications={myApplications}
+    />
+);
 }
 
 export default Dashboard;

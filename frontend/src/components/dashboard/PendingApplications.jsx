@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import {
   getApplications,
-  approveApplication,
-  rejectApplication,
+  volunteerApproveApplication,
+  volunteerRejectApplication,
 } from "../../services/adoptionApplicationService";
 
 function PendingApplications() {
@@ -23,29 +23,29 @@ function PendingApplications() {
     fetchApplications();
   }, []);
 
-  const handleApprove = async (id) => {
+  const handleRecommendApprove = async (id) => {
     try {
-      await approveApplication(id);
+      await volunteerApproveApplication(id);
 
       setApplications((prev) =>
         prev.filter((app) => app._id !== id)
       );
 
-      alert("Application approved.");
+      alert("Recommendation sent to admin.");
     } catch (err) {
       console.log(err);
     }
   };
 
-  const handleReject = async (id) => {
+  const handleRecommendReject = async (id) => {
     try {
-      await rejectApplication(id);
+      await volunteerRejectApplication(id);
 
       setApplications((prev) =>
         prev.filter((app) => app._id !== id)
       );
 
-      alert("Application rejected.");
+      alert("Recommendation recorded.");
     } catch (err) {
       console.log(err);
     }
@@ -88,17 +88,17 @@ function PendingApplications() {
 
               <div className="flex gap-3">
                 <button
-                  onClick={() => handleApprove(app._id)}
+                  onClick={() => handleRecommendApprove(app._id)}
                   className="bg-green-600 text-white px-5 py-2 rounded-lg"
                 >
-                  Approve
+                  Recommend Approval
                 </button>
 
                 <button
-                  onClick={() => handleReject(app._id)}
+                  onClick={() => handleRecommendReject(app._id)}
                   className="bg-red-600 text-white px-5 py-2 rounded-lg"
                 >
-                  Reject
+                  Recommend Rejection
                 </button>
               </div>
             </div>
