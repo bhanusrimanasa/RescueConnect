@@ -16,13 +16,26 @@ export const approveRequest = async (id) => {
   return response.data;
 };
 
-export const rejectRequest = async (id) => {
-  const response = await api.put(`/adoption-requests/${id}/reject`);
+export const rejectRequest = async (
+  id,
+  rejectionReason
+) => {
+  const response = await api.put(
+    `/adoption-requests/${id}/reject`,
+    {
+      rejectionReason,
+    }
+  );
+
   return response.data;
 };
 
-export const createAdoptionRequest = async (data) => {
-  const response = await api.post("/adoption-requests", data);
+export const createAdoptionRequest = async (formData) => {
+  const response = await api.post(
+    "/adoption-requests",
+    formData
+  );
+
   return response.data;
 };
 export const volunteerApproveRequest = async (id) => {
@@ -33,12 +46,18 @@ export const volunteerApproveRequest = async (id) => {
   return res.data;
 };
 
-export const volunteerRejectRequest = async (id) => {
-  const res = await api.put(
-    `/adoption-requests/${id}/volunteer-reject`
+export const volunteerRejectRequest = async (
+  id,
+  rejectionReason
+) => {
+  const response = await api.put(
+    `/adoption-requests/${id}/volunteer-reject`,
+    {
+      rejectionReason,
+    }
   );
 
-  return res.data;
+  return response.data;
 };
 export const adminApproveRequest = async (id) => {
   const res = await api.put(`/adoption-requests/${id}/approve`);

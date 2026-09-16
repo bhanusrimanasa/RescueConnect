@@ -1,5 +1,5 @@
+import "dotenv/config";
 import express from "express";
-import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./config/db.js";
 import cookieParser from "cookie-parser";
@@ -9,8 +9,9 @@ import userRoutes from "./routes/userRoutes.js";
 import volunteerRoutes from "./routes/volunteerRoutes.js";
 import adoptionRoutes from "./routes/adoptionRoutes.js";
 import adoptionRequestRoutes from "./routes/adoptionRequestRoutes.js";
-import adoptionApplicationRoutes from "./routes/adoptionApplicationRoutes.js"
-dotenv.config();
+import adoptionApplicationRoutes from "./routes/adoptionApplicationRoutes.js";
+import successStoryRoutes from "./routes/successStoryRoutes.js";
+
 const app=express();
 app.use(cors(
     {
@@ -30,6 +31,7 @@ app.use("/api/adoptions", adoptionRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/adoption-requests", adoptionRequestRoutes);
 app.use("/api/adoption-applications", adoptionApplicationRoutes);
+app.use("/api/success-stories", successStoryRoutes);
 await connectDB();
 app.listen(5000,()=>{
     console.log(`server running on port 5000`);

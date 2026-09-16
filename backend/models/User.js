@@ -18,7 +18,20 @@ const userSchema=mongoose.Schema({
         type:String,
         enum:["user","admin","volunteer"],
         default:"user",
-    },},
+    },
+    phone: {
+        type: String,
+        default: "",
+        },
+    address: {
+        type: String,
+        default: "",
+        },
+    profilePhoto: {
+        type: String,
+        default: "",
+        },
+        },
      {
     timestamps: true,
     }

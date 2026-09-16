@@ -1,129 +1,65 @@
 import AnimalReport from "../models/AnimalReport.js";
 import User from "../models/User.js";
-export const createReport=async(req,res)=>{
-    try{
-        const report = await AnimalReport.create({
-        ...req.body,
-        reportedBy: req.user._id,
-          statusHistory: [
-    {
-      status: "Pending",
-      note: "Report submitted",
-      updatedBy: req.user._id,
-    },
-  ],
-        });
-        res.status(200).json({
-            message:"Report created successfully",
-            report
-        });
-    }
-    catch(err){
-        res.status(400).json({
-            message:err.message
-        });
-    }
-};
-export const getAllReports=async(req,res)=>{
-    try{
-        const reports=await AnimalReport.find();
-        res.status(200).json(reports);
-    }
-    catch(err){
-        res.status(500).json({
-            message:err.message
-        });
-    }
-}
-export const getReportById=async(req,res)=>{
-    try{
-       const report = await AnimalReport.findById(req.params.id)
-  .populate("reportedBy", "name")
-  .populate("assignedVolunteer", "_id name role")
-  .populate("statusHistory.updatedBy", "name");
-        if(!report){
-            return res.status(404).json({
-                message:"Report not found"
-            });
-        }
-        res.json(report);
-    }
-    catch(err){
-        res.status(500).json({
-            message:err.message
-        })
-    }
-}
-export const updateReport = async (req, res) => {
-  try {
-    const report = await AnimalReport.findById(req.params.id);
-
-    if (!report) {
-      return res.status(404).json({
-        message: "Report not found",
-      });
-    }
-
-    if (report.reportedBy.toString() !== req.user._id.toString()) {
-      return res.status(403).json({
-        message: "You are not allowed to edit this report",
-      });
-    }
-
-    const updatedReport = await AnimalReport.findByIdAndUpdate(
-      req.params.id,
-      req.body,
+import cloudinary from "../config/cloudinary.js";
+import Volunteer from "../models/Volunteer.js";
+import streamifier from "streamifier";
+const uploadToCloudinary = (fileBuffer) => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
       {
-        new: true,
+        folder: "rescueconnect/reports",
+      },
+      (error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result.secure_url);
+        }
       }
     );
 
-    res.status(200).json(updatedReport);
-
-  } catch (err) {
-    res.status(500).json({
-      message: err.message,
-    });
-  }
+    streamifier.createReadStream(fileBuffer).pipe(stream);
+  });
 };
-export const deleteReport = async (req, res) => {
+export const createReport = async (req, res) => {
   try {
-    const report = await AnimalReport.findById(req.params.id);
+    let imageUrls = [];
 
-    if (!report) {
-      return res.status(404).json({
-        message: "Report not found",
-      });
+    if (req.files && req.files.length > 0) {
+      imageUrls = await Promise.all(
+        req.files.map((file) =>
+          uploadToCloudinary(file.buffer)
+        )
+      );
     }
 
-    if (report.reportedBy.toString() !== req.user._id.toString()) {
-      return res.status(403).json({
-        message: "You are not allowed to delete this report",
-      });
-    }
+    const report = await AnimalReport.create({
+      ...req.body,
 
-    await AnimalReport.findByIdAndDelete(req.params.id);
-
-    res.status(200).json({
-      message: "Report deleted successfully",
-    });
-
-  } catch (err) {
-    res.status(500).json({
-      message: err.message,
-    });
-  }
-};
-export const getMyReports = async (req, res) => {
-  try {
-    const reports = await AnimalReport.find({
       reportedBy: req.user._id,
-    }).sort({ createdAt: -1 });
 
-    res.status(200).json(reports);
-  } catch (err) {
-    res.status(500).json({
-      message: err.message,
+      images: imageUrls,
+
+      status: "Pending",
+
+      statusHistory: [
+        {
+          status: "Pending",
+          note: "Report submitted",
+          updatedBy: req.user._id,
+        },
+      ],
+    });
+
+    res.status(201).json({
+      message: "Report created successfully",
+      report,
+    });
+  } catch (error) {
+    console.error("CREATE REPORT ERROR:", error);
+
+    res.status(400).json({
+      message: error.message,
     });
   }
 };
@@ -139,24 +75,43 @@ export const assignVolunteer = async (req, res) => {
       });
     }
 
-    const volunteer = await User.findById(volunteerId);
+    const volunteer = await Volunteer.findById(volunteerId);
 
-    if (!volunteer || volunteer.role !== "volunteer") {
+    if (!volunteer) {
       return res.status(400).json({
         message: "Invalid volunteer",
       });
     }
 
-    report.assignedVolunteer = volunteerId;
+    if (volunteer.status !== "Approved") {
+      return res.status(400).json({
+        message: "Volunteer is not approved",
+      });
+    }
+
+    if (!volunteer.isAvailable) {
+      return res.status(400).json({
+        message: "Volunteer is not available",
+      });
+    }
+
+    // Store the actual User ID in AnimalReport
+    report.assignedVolunteer = volunteer.user;
     report.assignedBy = req.user._id;
     report.assignedAt = new Date();
     report.status = "Assigned";
+
     report.statusHistory.push({
-  status: "Assigned",
-  note: "Volunteer assigned",
-  updatedBy: req.user._id,
-});
+      status: "Assigned",
+      note: "Volunteer assigned",
+      updatedBy: req.user._id,
+    });
+
+    // Volunteer is now busy
+    volunteer.isAvailable = false;
+
     await report.save();
+    await volunteer.save();
 
     res.status(200).json({
       message: "Volunteer assigned successfully",
@@ -164,18 +119,32 @@ export const assignVolunteer = async (req, res) => {
     });
 
   } catch (error) {
-  console.error(error);
+    console.error("ASSIGN VOLUNTEER ERROR:", error);
 
-  res.status(500).json({
-    message: error.message,
-  });
-}
+    res.status(500).json({
+      message: error.message,
+    });
+  }
 };
 export const getAssignedReports = async (req, res) => {
   try {
     const reports = await AnimalReport.find({
       assignedVolunteer: req.user._id,
     }).sort({ createdAt: -1 });
+
+    res.status(200).json(reports);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+export const getCompletedReports = async (req, res) => {
+  try {
+    const reports = await AnimalReport.find({
+      rescuedBy: req.user._id,
+      rescuedAt: { $ne: null },
+    }).sort({ rescuedAt: -1 });
 
     res.status(200).json(reports);
   } catch (error) {
@@ -243,6 +212,9 @@ export const markRescued = async (req, res) => {
     }
 
     report.status = "Rescued";
+       report.rescuedAt = new Date();
+    report.rescuedBy = req.user._id;
+
     report.statusHistory.push({
   status: "Rescued",
   note: "Animal rescued",
@@ -292,6 +264,8 @@ export const updateProgress = async (req, res) => {
     // Update main status only for major milestones
     if (progress === "Rescued") {
       report.status = "Rescued";
+        report.rescuedAt = new Date();
+        report.rescuedBy = req.user._id;
     }
 
     if (progress === "Case Closed") {
@@ -305,6 +279,180 @@ export const updateProgress = async (req, res) => {
       report,
     });
 
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
+  }
+};
+export const rejectReport = async (req, res) => {
+  try {
+    const report = await AnimalReport.findById(req.params.id);
+
+    if (!report) {
+      return res.status(404).json({
+        message: "Report not found",
+      });
+    }
+
+    // Only the assigned volunteer can reject the mission
+    if (
+      !report.assignedVolunteer ||
+      report.assignedVolunteer.toString() !== req.user._id.toString()
+    ) {
+      return res.status(403).json({
+        message: "You are not assigned to this report",
+      });
+    }
+
+    // Add rejection to timeline
+    report.statusHistory.push({
+      status: "Volunteer Rejected",
+      note: "Volunteer rejected the rescue mission",
+      updatedBy: req.user._id,
+    });
+
+    // Make the report available for reassignment
+    report.assignedVolunteer = null;
+    report.assignedBy = null;
+    report.assignedAt = null;
+    report.status = "Pending";
+
+    // Add a new Pending event
+    report.statusHistory.push({
+      status: "Pending",
+      note: "Waiting for another volunteer to be assigned",
+      updatedBy: req.user._id,
+    });
+
+    await report.save();
+
+    res.status(200).json({
+      message: "Mission rejected. Report returned to pending.",
+      report,
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+export const deleteReport = async (req, res) => {
+  try {
+    const report = await AnimalReport.findById(req.params.id);
+
+    if (!report) {
+      return res.status(404).json({
+        message: "Report not found",
+      });
+    }
+
+    if (report.reportedBy.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        message: "You are not allowed to delete this report",
+      });
+    }
+
+    await AnimalReport.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({
+      message: "Report deleted successfully",
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
+  }
+};
+export const getAllReports = async (req, res) => {
+  try {
+    const reports = await AnimalReport.find()
+      .populate("reportedBy", "name")
+      .populate("assignedVolunteer", "name")
+      .sort({ createdAt: -1 });
+
+    const priorityOrder = {
+      Critical: 1,
+      High: 2,
+      Medium: 3,
+      Low: 4,
+    };
+
+    reports.sort(
+      (a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]
+    );
+
+    res.status(200).json(reports);
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
+  }
+};
+export const getReportById = async (req, res) => {
+  try {
+    const report = await AnimalReport.findById(req.params.id)
+      .populate("reportedBy", "name")
+      .populate("assignedVolunteer", "_id name role")
+      .populate("statusHistory.updatedBy", "name");
+
+    if (!report) {
+      return res.status(404).json({
+        message: "Report not found",
+      });
+    }
+
+    res.status(200).json(report);
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
+  }
+};
+export const updateReport = async (req, res) => {
+  try {
+    const report = await AnimalReport.findById(req.params.id);
+
+    if (!report) {
+      return res.status(404).json({
+        message: "Report not found",
+      });
+    }
+
+    if (report.reportedBy.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        message: "You are not allowed to edit this report",
+      });
+    }
+
+    const updatedReport = await AnimalReport.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      {
+        new: true,
+      }
+    );
+
+    res.status(200).json(updatedReport);
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
+  }
+};
+export const getMyReports = async (req, res) => {
+  try {
+    const reports = await AnimalReport.find({
+      reportedBy: req.user._id,
+    })
+      .populate("assignedVolunteer", "name")
+      .populate("statusHistory.updatedBy", "name")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json(reports);
   } catch (err) {
     res.status(500).json({
       message: err.message,

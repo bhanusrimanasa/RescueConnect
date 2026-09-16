@@ -40,3 +40,11 @@ export const approveAdoptionListing = async (id, approvalStatus) => {
 
   return res.data;
 };
+export const createAdoptionFromRescue = async (reportId, formData) => {
+  const response = await api.post(
+    `/adoptions/from-rescue/${reportId}`,
+    formData
+  );
+
+  return response.data;
+};

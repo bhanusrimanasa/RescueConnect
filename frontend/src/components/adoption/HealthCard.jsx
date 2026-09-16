@@ -1,40 +1,73 @@
-import { CheckCircle, XCircle } from "lucide-react";
+import { CheckCircle2, XCircle, Stethoscope } from "lucide-react";
 
 function HealthCard({ animal }) {
   return (
-    <div className="bg-white rounded-3xl shadow-lg p-8">
-      <h2 className="text-2xl font-bold mb-6">Health Information</h2>
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 sm:p-8 space-y-6">
+      
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
+          <Stethoscope size={20} />
+        </div>
+        <div>
+          <h2 className="text-lg font-bold text-slate-900">Health & Medical</h2>
+          <p className="text-slate-400 text-xs">Verified shelter medical profile</p>
+        </div>
+      </div>
 
-      <div className="space-y-4">
-
-        <div className="flex justify-between">
-          <span>Vaccinated</span>
+      {/* List items */}
+      <div className="space-y-3 pt-2">
+        
+        {/* Vaccinated */}
+        <div className="flex items-center justify-between p-3.5 bg-slate-50/70 border border-slate-100 rounded-xl">
+          <span className="text-xs sm:text-sm font-semibold text-slate-700">
+            Vaccinated
+          </span>
           {animal.vaccinated ? (
-            <CheckCircle className="text-green-600" />
+            <div className="flex items-center gap-1.5 text-emerald-600 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-lg text-xs font-semibold">
+              <CheckCircle2 size={16} /> Yes
+            </div>
           ) : (
-            <XCircle className="text-red-500" />
+            <div className="flex items-center gap-1.5 text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg text-xs font-semibold">
+              <XCircle size={16} /> No
+            </div>
           )}
         </div>
 
-        <div className="flex justify-between">
-          <span>Sterilized</span>
+        {/* Sterilized */}
+        <div className="flex items-center justify-between p-3.5 bg-slate-50/70 border border-slate-100 rounded-xl">
+          <span className="text-xs sm:text-sm font-semibold text-slate-700">
+            Sterilized / Spayed
+          </span>
           {animal.sterilized ? (
-            <CheckCircle className="text-green-600" />
+            <div className="flex items-center gap-1.5 text-emerald-600 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-lg text-xs font-semibold">
+              <CheckCircle2 size={16} /> Yes
+            </div>
           ) : (
-            <XCircle className="text-red-500" />
+            <div className="flex items-center gap-1.5 text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg text-xs font-semibold">
+              <XCircle size={16} /> No
+            </div>
           )}
         </div>
 
-        <div className="flex justify-between">
-          <span>Special Needs</span>
+        {/* Special Needs */}
+        <div className="flex items-center justify-between p-3.5 bg-slate-50/70 border border-slate-100 rounded-xl">
+          <span className="text-xs sm:text-sm font-semibold text-slate-700">
+            Special Needs / Care
+          </span>
           {animal.specialNeeds ? (
-            <CheckCircle className="text-orange-500" />
+            <div className="flex items-center gap-1.5 text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-lg text-xs font-semibold">
+              <CheckCircle2 size={16} /> Yes
+            </div>
           ) : (
-            <XCircle className="text-green-600" />
+            <div className="flex items-center gap-1.5 text-emerald-600 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-lg text-xs font-semibold">
+              <CheckCircle2 size={16} /> None
+            </div>
           )}
         </div>
 
       </div>
+
     </div>
   );
 }

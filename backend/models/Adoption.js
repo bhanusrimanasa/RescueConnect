@@ -70,10 +70,11 @@ const adoptionSchema = new mongoose.Schema(
       },
     ],
 
-    image: {
-      type: String,
-      required: true,
-    },
+   images: [
+      {
+        type: String,
+      },
+    ],
 
     status: {
       type: String,
@@ -87,15 +88,26 @@ const adoptionSchema = new mongoose.Schema(
     },
     approvalStatus: {
   type: String,
-  enum: ["Pending", "Approved", "Rejected"],
+   enum: [
+    "Pending",
+    "Volunteer Approved",
+    "Volunteer Rejected",
+    "Admin Approved",
+    "Admin Rejected",
+  ],
   default: "Pending",
 },
 
     rescuedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+     default:null,
     },
+    rescueReport: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "AnimalReport",
+  default:null,
+},
   },
   {
     timestamps: true,

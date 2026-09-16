@@ -1,7 +1,28 @@
 import api from "./api";
 
 export const createReport = async (reportData) => {
-  const response = await api.post("/reports", reportData);
+  const formData = new FormData();
+
+  formData.append("animalType", reportData.animalType);
+  formData.append("problem", reportData.problem);
+  formData.append("priority", reportData.priority);
+  formData.append("location", reportData.location);
+  if (reportData.latitude !== null) {
+  formData.append("latitude", reportData.latitude);
+}
+
+if (reportData.longitude !== null) {
+  formData.append("longitude", reportData.longitude);
+}
+  formData.append("description", reportData.description);
+  formData.append("contactUser", reportData.contactUser);
+
+  reportData.images.forEach((image) => {
+    formData.append("images", image);
+  });
+
+  const response = await api.post("/reports", formData);
+
   return response.data;
 };
 
@@ -20,6 +41,7 @@ export const getMyReports = async () => {
 export const assignVolunteer = async (
   reportId,
   volunteerId
+
 ) => {
   const response = await api.put(
     `/reports/${reportId}/assign`,
@@ -30,6 +52,11 @@ export const assignVolunteer = async (
 
   return response.data;
 };
+export const getAssignedReports = async () => {
+  const response = await api.get("/reports/assigned");
+  return response.data;
+};
+
 export const acceptReport = async (id) => {
   const response = await api.put(`/reports/${id}/accept`);
   return response.data;
@@ -45,5 +72,13 @@ export const updateProgress = async (id, data) => {
     data
   );
 
+  return response.data;
+};
+export const rejectReport = async (id) => {
+  const response = await api.put(`/reports/${id}/reject`);
+  return response.data;
+};
+export const getCompletedReports = async () => {
+  const response = await api.get("/reports/completed");
   return response.data;
 };

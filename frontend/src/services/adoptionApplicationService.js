@@ -21,9 +21,12 @@ export const approveApplication = async (id) => {
   return response.data;
 };
 
-export const rejectApplication = async (id) => {
+export const rejectApplication = async (id, rejectionReason) => {
   const response = await api.put(
-    `/adoption-applications/${id}/reject`
+    `/adoption-applications/${id}/reject`,
+    {
+      rejectionReason,
+    }
   );
 
   return response.data;
@@ -46,9 +49,15 @@ export const getVolunteerApprovedApplications = async () => {
 
   return res.data;
 };
-export const volunteerRejectApplication = async (id) => {
+export const volunteerRejectApplication = async (
+  id,
+  rejectionReason
+) => {
   const res = await api.put(
-    `/adoption-applications/${id}/volunteer-reject`
+    `/adoption-applications/${id}/volunteer-reject`,
+    {
+      rejectionReason,
+    }
   );
 
   return res.data;

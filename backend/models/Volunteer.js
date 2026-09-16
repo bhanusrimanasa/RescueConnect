@@ -14,14 +14,48 @@ const volunteerSchema = new mongoose.Schema(
       required: true,
     },
 
+    emergencyContact: {
+      type: String,
+      required: true,
+    },
+
     city: {
       type: String,
       required: true,
     },
 
+    latitude: {
+      type: Number,
+      default: null,
+    },
+
+    longitude: {
+      type: Number,
+      default: null,
+    },
+
+    isAvailable: {
+      type: Boolean,
+      default: false,
+    },
+
     availability: {
       type: String,
       enum: ["Weekdays", "Weekends", "Anytime"],
+      required: true,
+    },
+
+    hasVehicle: {
+      type: String,
+      enum: ["Yes", "No"],
+      default: "Yes",
+      required: true,
+    },
+
+    experience: {
+      type: String,
+      enum: ["Beginner", "Intermediate", "Expert"],
+      default: "Beginner",
       required: true,
     },
 

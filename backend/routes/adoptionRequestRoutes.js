@@ -8,14 +8,19 @@ import {
   approveRequest,
   rejectRequest,
 } from "../controllers/adoptionRequestController.js";
-
+import upload from "../middleware/uploadMiddleware.js";
 import { protect } from "../middleware/authMiddleware.js";
 import { authorize } from "../middleware/roleMiddleware.js";
 
 const router = express.Router();
 
 // User
-router.post("/", protect, createAdoptionRequest);
+router.post(
+  "/",
+  protect,
+  upload.array("images", 10),
+  createAdoptionRequest
+);
 
 // Volunteer
 router.get(

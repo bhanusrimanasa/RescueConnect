@@ -62,7 +62,7 @@ const adoptionRequestSchema = new mongoose.Schema(
 
     adoptionReason: {
       type: String,
-      required: true,
+      default:"",
     },
 
     vaccinated: {
@@ -80,26 +80,68 @@ const adoptionRequestSchema = new mongoose.Schema(
       default: false,
     },
 
-    image: {
-      type: String,
-       default: "/images/rescuedog.jpg",
-    },
+    images: [
+      {
+        type: String,
+      },
+    ],
 
     status: {
       type: String,
       enum: [
-    "Pending",
-    "Volunteer Approved",
-    "Volunteer Rejected",
-    "Admin Approved",
-    "Admin Rejected",
-  ],
+        "Pending",
+        "Volunteer Approved",
+        "Volunteer Rejected",
+        "Admin Approved",
+        "Admin Rejected",
+      ],
       default: "Pending",
     },
+
+    volunteerReviewedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+
+    volunteerReviewedAt: {
+      type: Date,
+      default: null,
+    },
+
+    adminReviewedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+
+    adminReviewedAt: {
+      type: Date,
+      default: null,
+    },
+
+    rejectionReason: {
+      type: String,
+      default: "",
+    },
+
+    adoptionListing: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Adoption",
+      default: null,
+    },
+    rescueReport: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "AnimalReport",
+  default: null,
+},
   },
   {
     timestamps: true,
   }
 );
 
-export default mongoose.model("AdoptionRequest", adoptionRequestSchema);
+export default mongoose.model(
+  "AdoptionRequest",
+  adoptionRequestSchema
+);

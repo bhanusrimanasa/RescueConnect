@@ -52,7 +52,7 @@ function AdoptionDetails() {
 
           {/* Left */}
           <img
-            src={animal.image}
+            src={animal.images?.[0]}
             alt={animal.name}
             className="w-full h-[600px] object-cover rounded-3xl shadow-xl"
           />

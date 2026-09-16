@@ -2,6 +2,7 @@ import express from "express";
 
 import {
   createAdoption,
+  createAdoptionFromRescue,
   getAllAdoptions,
   getAdoptionById,
   updateAdoption,
@@ -12,7 +13,7 @@ import {
 
 import { protect } from "../middleware/authMiddleware.js";
 import { authorize } from "../middleware/roleMiddleware.js";
-
+import upload from "../middleware/uploadMiddleware.js";
 const router = express.Router();
 
 router.get("/", getAllAdoptions);
@@ -29,6 +30,13 @@ router.put(
   protect,
   authorize("admin"),
   updateApprovalStatus
+);
+router.post(
+  "/from-rescue/:reportId",
+  protect,
+  authorize("volunteer"),
+  upload.array("images", 10),
+  createAdoptionFromRescue
 );
 router.get("/:id", getAdoptionById);
 

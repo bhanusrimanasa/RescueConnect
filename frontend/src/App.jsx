@@ -1,8 +1,8 @@
 import { Routes, Route } from "react-router-dom";
-
+import CreateAdoptionFromRescue from "./pages/CreateAdoptionFromRescue";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-
+import MyReports from "./pages/MyReports";
 import Home from "./pages/Home";
 import ReportAnimal from "./pages/ReportAnimal";
 import Reports from "./pages/Reports";
@@ -17,6 +17,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import AdoptionDetails from "./pages/AdoptionDetails";
 import AdoptionRequest from "./pages/AdoptionRequest";
 import AdoptionApplication from "./pages/AdoptionApplication";
+import CreateSuccessStory from "./pages/CreateSuccessStory";
+import SuccessStoryDetails from "./pages/SuccessStoryDetails";
 function App() {
   return (
     <>
@@ -38,6 +40,14 @@ function App() {
           <Route path="/reports/:id" element={<ReportDetails />} />
 
           <Route path="/adoptions" element={<Adoptions />} />
+         <Route
+        path="/adoptions/create-from-rescue/:reportId"
+        element={
+          <ProtectedRoute>
+            <CreateAdoptionFromRescue />
+          </ProtectedRoute>
+        }
+      />
           <Route path="/adoptions/:id"  element={<AdoptionDetails />} /> 
           <Route
                 path="/adoptions/:id/apply"
@@ -78,7 +88,19 @@ function App() {
               </ProtectedRoute>
             }
           />
-          </Routes>
+                <Route
+        path="/my-reports"
+        element={<MyReports />}
+      />
+      <Route
+  path="/success-stories/create/:reportId"
+  element={<CreateSuccessStory />}
+/>
+            <Route
+            path="/success-stories/:id"
+            element={<SuccessStoryDetails />}
+          />
+                </Routes>
       </main>
 
       <Footer />

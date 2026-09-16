@@ -12,25 +12,35 @@ const animalReportSchema = new mongoose.Schema(
       required: true,
     },
 
-    condition: {
-      type: String,
-      required: true,
-    },
-
+   
     location: {
       type: String,
       required: true,
     },
+    latitude: {
+       type: Number,
+        default:null,
+      },
 
+      longitude: {
+        type: Number,
+        default:null,
+      },
     description: {
       type: String,
       required: true,
     },
 
+    images: [
+        {
+          type: String,
+        },
+      ],
     contactUser: {
       type: String,
       required: true,
     },
+    
 
       status: {
     type: String,
@@ -64,16 +74,31 @@ const animalReportSchema = new mongoose.Schema(
   assignedAt: {
     type: Date,
   },
+  rescuedAt: {
+  type: Date,
+  default: null,
+},
+
+rescuedBy: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "User",
+  default: null,
+},
 
   priority: {
     type: String,
-    enum: ["Critical", "High", "Moderate", "Low"],
-    default: "Moderate",
+    enum: ["Critical", "High", "Medium", "Low"],
+    default: "Medium",
   },
-  statusHistory: [
+ statusHistory: [
   {
     status: {
       type: String,
+    },
+
+    note: {
+      type: String,
+      default: "",
     },
 
     updatedBy: {
@@ -87,7 +112,6 @@ const animalReportSchema = new mongoose.Schema(
     },
   },
 ],
-
   },
   {
     timestamps: true,

@@ -1,11 +1,13 @@
 import express from "express";
-import { registerUser,loginUser,getMe,updateProfile,logoutUser,becomeVolunteer } from "../controllers/authController.js";
+import { registerUser,loginUser,getMe,updateProfile,changePassword,logoutUser,becomeVolunteer } from "../controllers/authController.js";
 import { protect } from "../middleware/authMiddleware.js";
+import upload from "../middleware/uploadMiddleware.js";
 const router=express.Router();
-router.put("/profile", protect, updateProfile);
+router.put("/profile", protect,upload.single("profilePhoto"), updateProfile);
 router.post("/register",registerUser);
 router.post("/login",loginUser);
 router.get("/me", protect, getMe);
 router.post("/logout", logoutUser);
 router.put("/volunteer", protect, becomeVolunteer);
+router.put("/change-password", protect, changePassword);
 export default router;

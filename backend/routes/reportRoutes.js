@@ -1,4 +1,5 @@
 import express from "express";
+
 import {
   createReport,
   getAllReports,
@@ -8,13 +9,23 @@ import {
   getMyReports,
   assignVolunteer,
   getAssignedReports,
+  getCompletedReports,
   acceptReport,
-  markRescued,updateProgress,
+  markRescued,
+  updateProgress,
+  rejectReport,
 } from "../controllers/reportController.js";
+import upload from "../middleware/uploadMiddleware.js";
 import { protect } from "../middleware/authMiddleware.js";
 import { authorize } from "../middleware/roleMiddleware.js";
+
 const router=express.Router();
-router.post("/", protect, createReport);
+router.post(
+  "/",
+  protect,
+  upload.array("images", 10),
+  createReport
+);
 
 router.get("/", getAllReports);
 
@@ -26,6 +37,12 @@ router.get(
   protect,
   authorize("volunteer"),
   getAssignedReports
+);
+router.get(
+  "/completed",
+  protect,
+  authorize("volunteer"),
+  getCompletedReports
 );
 
 router.put(
@@ -53,7 +70,12 @@ router.put(
 router.get("/:id", getReportById);
 
 router.put("/:id", protect, updateReport);
-
+router.put(
+   "/:id/reject",
+  protect,
+  authorize("volunteer"),
+  rejectReport
+);
 router.delete("/:id", protect, deleteReport);
 export default router;
 router.put(

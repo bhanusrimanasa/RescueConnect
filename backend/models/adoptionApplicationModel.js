@@ -34,6 +34,11 @@ const adoptionApplicationSchema = new mongoose.Schema(
       required: true,
     },
 
+    familyMembers: {
+      type: String,
+      required: true,
+    },
+
     experience: {
       type: String,
       default: "",
@@ -44,17 +49,44 @@ const adoptionApplicationSchema = new mongoose.Schema(
       required: true,
     },
 
-   status: {
-  type: String,
-  enum: [
-    "Pending",
-    "Volunteer Approved",
-    "Volunteer Rejected",
-    "Approved",
-    "Rejected",
-  ],
-  default: "Pending",
-},
+    status: {
+      type: String,
+      enum: [
+        "Pending",
+        "Volunteer Approved",
+        "Volunteer Rejected",
+        "Approved",
+        "Rejected",
+      ],
+      default: "Pending",
+    },
+
+    volunteerReviewedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+
+    volunteerReviewedAt: {
+      type: Date,
+      default: null,
+    },
+
+    adminReviewedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+
+    adminReviewedAt: {
+      type: Date,
+      default: null,
+    },
+
+    rejectionReason: {
+      type: String,
+      default: "",
+    },
   },
   {
     timestamps: true,
